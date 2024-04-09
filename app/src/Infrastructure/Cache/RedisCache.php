@@ -13,7 +13,7 @@ class RedisCache implements CacheInterface
 
     public function set(string $key, $value, int $ttl = 0)
     {
-        Cache::put($key, $value, $ttl);
+        Cache::put($key, $value, $ttl * 60);
     }
 
     public function delete(string $key)

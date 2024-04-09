@@ -15,5 +15,13 @@ return Application::configure(basePath: dirname(__DIR__))
         //
     })
     ->withExceptions(function (Exceptions $exceptions) {
-        //
+        $exceptions->render(function (Throwable $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'An error occurred while processing the request',
+                'data' => [
+                    'exception' => $e->getMessage(),
+                ],
+            ], 500);
+        });
     })->create();

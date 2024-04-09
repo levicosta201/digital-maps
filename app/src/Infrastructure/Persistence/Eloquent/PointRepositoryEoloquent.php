@@ -25,4 +25,24 @@ class PointRepositoryEoloquent implements PointRepositoryInterface
     {
         return PointModel::all()->toArray();
     }
+
+    public function update(PointDto $pointDto): int
+    {
+        return PointModel::where('uuid', $pointDto->uuid)->update($pointDto->toArray());
+    }
+
+    public function delete(string $uuid): int
+    {
+        return PointModel::where('uuid', $uuid)->delete();
+    }
+
+    public function getNear(float $latitude, float $longitude, int $distance, string $hour): array
+    {
+        return PointModel::where('latitude', '>=', $latitude - $distance)
+            ->where('latitude', '<=', $latitude + $distance)
+            ->where('longitude', '>=', $longitude - $distance)
+            ->where('longitude', '<=', $longitude + $distance)
+            ->get()
+            ->toArray();
+    }
 }
