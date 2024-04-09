@@ -12,5 +12,8 @@ up: ## start development environment
 down: ## stop development environment
 	docker-compose down
 
+test: ## run test
+	docker-compose run --rm laravel.digimaps php artisan test
+
 migrate: ## migrate database
 	docker-compose run --rm laravel.digimaps php artisan migrate
