@@ -65,11 +65,12 @@ class PointsServiceTest extends TestCase
             'close_hour' => '18:21',
         ]);
 
-        $this->pointRepository
+        $pointRepository = Mockery::mock(PointRepositoryInterface::class);
+        $pointRepository
             ->shouldReceive('create')
             ->andThrow(new \Exception('Error'));
 
-        $pointsService = new PointsService($this->pointRepository, $this->cache);
+        $pointsService = new PointsService($pointRepository, $this->cache);
 
         $this->expectException(\Exception::class);
         $pointsService->create($pointDto);
@@ -108,5 +109,60 @@ class PointsServiceTest extends TestCase
         $point = $pointsService->getPoints();
 
         $this->assertEquals(2, count($point));
+    }
+
+    public function testGetPointsException()
+    {
+        $points = [
+            PointDto::fromArray([
+                'uuid' => 'mock-mock-mock-mock',
+                'name' => 'test',
+                'latitude' => 15,
+                'longitude' => 30,
+                'open_hour' => '08:17',
+                'close_hour' => '18:21',
+            ]),
+            PointDto::fromArray([
+                'uuid' => 'mock-mock-mock-mock',
+                'name' => 'test',
+                'latitude' => 15,
+                'longitude' => 30,
+                'open_hour' => '08:17',
+                'close_hour' => '18:21',
+            ]),
+        ];
+        $pointRepository = Mockery::mock(PointRepositoryInterface::class);
+        $pointRepository
+            ->shouldReceive('all')
+            ->andThrow(new \Exception('Error'));
+
+        $cache = Mockery::mock(CacheInterface::class);
+        $cache
+            ->shouldReceive('get')
+            ->andReturn($points);
+
+        $pointsService = new PointsService($pointRepository, $cache);
+        $pointsResponse = $pointsService->getPoints();
+
+        $this->assertIsArray($pointsResponse);
+    }
+
+    public function testGetPointsFromCache()
+    {
+        $pointRepository = Mockery::mock(PointRepositoryInterface::class);
+        $pointRepository
+            ->shouldReceive('all')
+            ->andThrow(new \Exception('Error'));
+
+        $cache = Mockery::mock(CacheInterface::class);
+        $cache
+            ->shouldReceive('get')
+            ->andReturn([]);
+
+        $pointsService = new PointsService($pointRepository, $cache);
+        $pointsResponse = $pointsService->getPoints();
+
+        $this->assertIsArray($pointsResponse);
+        $this->assertEquals([], $pointsResponse);
     }
 }
