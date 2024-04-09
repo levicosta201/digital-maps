@@ -39,12 +39,17 @@ Para rodar os testes, rode o seguinte comando
 ```bash
   make test
 ```
+Caso deseje gerar automaticamente dados para os testes, rode o comando abaixo
+
+```bash
+  make seed
+```
 
 Para acessar o coverage e visualizar a coberturas do testes unitários, basta acessar **reports/index.html**
 
 
 # Documentação da Api
-Para localizar a documentação da api, você pode, após subir o projeto, acessar a url /swagger e encontratrá todos os endpoints livres para realizar requisições.
+Para localizar a documentação da api, você pode, após subir o projeto, acessar a url **/swagger** e encontratrá todos os endpoints livres para realizar requisições.
 
 
 
