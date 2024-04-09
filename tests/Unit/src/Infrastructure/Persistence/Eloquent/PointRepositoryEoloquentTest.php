@@ -57,4 +57,61 @@ class PointRepositoryEoloquentTest extends TestCase
 
         $this->assertIsArray($points);
     }
+
+    public function testUpdateSuccess()
+    {
+        $mockPointDto = PointDto::fromArray([
+            'uuid' => 'mock-mock-mock-mock',
+            'name' => 'test',
+            'latitude' => 15,
+            'longitude' => 30,
+            'open_hour' => '08:17',
+            'close_hour' => '18:21',
+        ]);
+
+        $pointRepository = new PointRepositoryEoloquent();
+        $point = $pointRepository->update($mockPointDto);
+
+        $this->assertIsInt($point);
+    }
+
+    public function testDeleteSuccess()
+    {
+        $pointRepository = new PointRepositoryEoloquent();
+        $point = $pointRepository->delete('mock-mock-mock-mock');
+
+        $this->assertIsInt($point);
+    }
+
+    public function testGetNearSuccess()
+    {
+        $mockPointDto = [
+            PointDto::fromArray([
+                'uuid' => 'mock-mock-mock-mock',
+                'name' => 'test',
+                'latitude' => 15,
+                'longitude' => 30,
+                'open_hour' => '08:17',
+                'close_hour' => '18:21',
+            ]),
+            PointDto::fromArray([
+                'uuid' => 'mock-mock-mock-mock-2',
+                'name' => 'test 2',
+                'latitude' => 15,
+                'longitude' => 30,
+                'open_hour' => '08:17',
+                'close_hour' => '18:21',
+            ])
+        ];
+
+        $pointRepository = new PointRepositoryEoloquent();
+        $point = $pointRepository->getNear(
+            15,
+            30,
+            10,
+            '08:17'
+        );
+
+        $this->assertIsArray($point);
+    }
 }

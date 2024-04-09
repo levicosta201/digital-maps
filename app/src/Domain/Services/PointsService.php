@@ -13,7 +13,7 @@ class PointsService
 {
     public function __construct(
        protected PointRepositoryInterface $pointRepository,
-        protected CacheInterface $cache
+       protected CacheInterface $cache
     ){ }
 
     public function create(PointDto $pointDto): PointDto
@@ -98,7 +98,7 @@ class PointsService
 
             return $pointsNear;
         } catch (\Exception $exception) {
-            return $this->cache->get(CacheKeyEnum::POINTS_NEAR->value);
+            throw $exception;
         }
     }
 }

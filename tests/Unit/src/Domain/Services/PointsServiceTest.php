@@ -165,4 +165,166 @@ class PointsServiceTest extends TestCase
         $this->assertIsArray($pointsResponse);
         $this->assertEquals([], $pointsResponse);
     }
+
+    /**
+     * @throws \Exception
+     */
+    public function testUpdatePointSuccess()
+    {
+        $pointDto = PointDto::fromArray([
+            'uuid' => 'mock-mock-mock-mock',
+            'name' => 'test',
+            'latitude' => 15,
+            'longitude' => 30,
+            'open_hour' => '08:17',
+            'close_hour' => '18:21',
+        ]);
+
+        $this->pointRepository
+            ->shouldReceive('update')
+            ->andReturn(1);
+
+        $pointsService = new PointsService($this->pointRepository, $this->cache);
+        $point = $pointsService->update($pointDto);
+
+        $this->assertEquals('mock-mock-mock-mock', $point->uuid);
+    }
+
+    public function testUpdatePointNotFound()
+    {
+        $pointDto = PointDto::fromArray([
+            'uuid' => 'mock-mock-mock-mock',
+            'name' => 'test',
+            'latitude' => 15,
+            'longitude' => 30,
+            'open_hour' => '08:17',
+            'close_hour' => '18:21',
+        ]);
+
+        $this->pointRepository
+            ->shouldReceive('update')
+            ->andReturn(0);
+
+        $this->expectException(\Exception::class);
+        $pointsService = new PointsService($this->pointRepository, $this->cache);
+        $point = $pointsService->update($pointDto);
+    }
+
+    public function testDeletePointSuccess()
+    {
+        $mockUuid = 'mock-mock-mock-mock';
+
+        $this->pointRepository
+            ->shouldReceive('delete')
+            ->andReturn(1);
+
+        $pointsService = new PointsService($this->pointRepository, $this->cache);
+        $point = $pointsService->delete($mockUuid);
+
+        $this->assertTrue($point);
+    }
+
+    public function testDeletePointException()
+    {
+        $mockUuid = 'mock-mock-mock-mock';
+
+        $this->pointRepository
+            ->shouldReceive('delete')
+            ->andThrow(new \Exception('Falha Mockada de DB'));
+
+        $this->expectException(\Exception::class);
+        $pointsService = new PointsService($this->pointRepository, $this->cache);
+        $point = $pointsService->delete($mockUuid);
+
+        $this->assertTrue($point);
+    }
+
+    public function testGetNearSuccess()
+    {
+        $points = [
+            PointDto::fromArray([
+                'uuid' => 'mock-mock-mock-mock',
+                'name' => 'test',
+                'latitude' => 15,
+                'longitude' => 30,
+                'open_hour' => '08:17',
+                'close_hour' => '18:21',
+            ]),
+            PointDto::fromArray([
+                'uuid' => 'mock-mock-mock-mock',
+                'name' => 'test',
+                'latitude' => 15,
+                'longitude' => 30,
+                'open_hour' => '08:17',
+                'close_hour' => '18:21',
+            ]),
+        ];
+
+        $this->cache
+            ->shouldReceive('set')
+            ->andReturn(true);
+
+        $this->pointRepository
+            ->shouldReceive('getNear')
+            ->andReturn($points);
+
+        $pointsService = new PointsService($this->pointRepository, $this->cache);
+        $point = $pointsService->getNear(15, 30, 2, '08:22');
+
+        $this->assertEquals(2, count($point));
+    }
+
+    public function testGetNearSuccessCachedData()
+    {
+        $points = [
+            PointDto::fromArray([
+                'uuid' => 'mock-mock-mock-mock',
+                'name' => 'test',
+                'latitude' => 15,
+                'longitude' => 30,
+                'open_hour' => '08:17',
+                'close_hour' => '18:21',
+            ]),
+            PointDto::fromArray([
+                'uuid' => 'mock-mock-mock-mock',
+                'name' => 'test',
+                'latitude' => 15,
+                'longitude' => 30,
+                'open_hour' => '08:17',
+                'close_hour' => '18:21',
+            ]),
+        ];
+
+        $cache = Mockery::mock(CacheInterface::class);
+        $cache
+            ->shouldReceive('get')
+            ->andReturn($points);
+
+        $this->pointRepository
+            ->shouldReceive('getNear')
+            ->andReturn($points);
+
+        $pointsService = new PointsService($this->pointRepository, $cache);
+        $point = $pointsService->getNear(15, 30, 2, '08:22');
+
+        $this->assertEquals(2, count($point));
+    }
+
+    public function testGetNearExceptionWithoutCachedData()
+    {
+        $points = null;
+
+        $cache = Mockery::mock(CacheInterface::class);
+        $cache
+            ->shouldReceive('get')
+            ->andReturn($points);
+
+        $this->pointRepository
+            ->shouldReceive('getNear')
+            ->andThrow(new \Exception('Error DB Mocked'));
+
+        $this->expectException(\Exception::class);
+        $pointsService = new PointsService($this->pointRepository, $cache);
+        $point = $pointsService->getNear(15, 30, 2, '08:22');
+    }
 }

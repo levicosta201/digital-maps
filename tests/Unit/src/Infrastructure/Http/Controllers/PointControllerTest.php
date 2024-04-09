@@ -2,7 +2,10 @@
 namespace Tests\Unit\src\Infrastructure\Http\Controllers;
 
 use App\src\Application\Actions\CreatePointAction;
+use App\src\Application\Actions\DeletePointAction;
+use App\src\Application\Actions\ListNearPointsAction;
 use App\src\Application\Actions\ListPointsAction;
+use App\src\Application\Actions\UpdatePointAction;
 use App\src\Application\DTO\PointDto;
 use App\src\Infrastructure\Http\Controllers\PointController;
 use App\src\Infrastructure\Http\Requests\PointRequest;
@@ -12,9 +15,12 @@ use Tests\TestCase;
 
 class PointControllerTest extends TestCase
 {
-    private PointRequest $pointRequest;
-    private CreatePointAction $createPointAction;
-    private ListPointsAction $listPointsAction;
+    protected PointRequest $pointRequest;
+    protected CreatePointAction $createPointAction;
+    protected ListPointsAction $listPointsAction;
+    protected UpdatePointAction $updatePointAction;
+    protected DeletePointAction $deletePointAction;
+    protected ListNearPointsAction $listNearPointsAction;
 
     protected function setUp(): void
     {
@@ -63,6 +69,45 @@ class PointControllerTest extends TestCase
                     '17:00'
                 )
             ]);
+
+        $this->deletePointAction = Mockery::mock(DeletePointAction::class);
+        $this->deletePointAction
+            ->shouldReceive('execute')
+            ->andReturn(true);
+
+        $this->updatePointAction = Mockery::mock(UpdatePointAction::class);
+        $this->updatePointAction
+            ->shouldReceive('execute')
+            ->andReturn(new PointDto(
+                'uuid',
+                'Point 1',
+                15,
+                21,
+                '08:00',
+                '18:00'
+            ));
+
+        $this->listNearPointsAction = Mockery::mock(ListNearPointsAction::class);
+        $this->listNearPointsAction
+            ->shouldReceive('execute')
+            ->andReturn([
+                new PointDto(
+                    'uuid',
+                    'Point 1',
+                    15,
+                    21,
+                    '08:00',
+                    '18:00'
+                ),
+                new PointDto(
+                    'uuid',
+                    'Point 2',
+                    150,
+                    210,
+                    '09:00',
+                    '17:00'
+                )
+            ]);
     }
 
     public function testStoreSuccess()
@@ -81,6 +126,43 @@ class PointControllerTest extends TestCase
         $pointController = new PointController();
         $point = $pointController->list(
             $this->listPointsAction
+        );
+
+        $this->assertInstanceOf(JsonResponse::class, $point);
+    }
+
+    public function testUpdatePointSuccess()
+    {
+        $pointController = new PointController();
+        $point = $pointController->update(
+            'uuid',
+            $this->pointRequest,
+            $this->updatePointAction
+        );
+
+        $this->assertInstanceOf(JsonResponse::class, $point);
+    }
+
+    public function testDeletePointSuccess()
+    {
+        $pointController = new PointController();
+        $point = $pointController->delete(
+            'uuid',
+            $this->deletePointAction
+        );
+
+        $this->assertInstanceOf(JsonResponse::class, $point);
+    }
+
+    public function testNearbyPointsSuccess()
+    {
+        $pointController = new PointController();
+        $point = $pointController->near(
+            15,
+            21,
+            100,
+            '08:25',
+            $this->listNearPointsAction
         );
 
         $this->assertInstanceOf(JsonResponse::class, $point);
