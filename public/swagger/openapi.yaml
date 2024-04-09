@@ -1,12 +1,70 @@
 openapi: 3.0.0
 paths:
+  /api/points:
+    get:
+      tags:
+        - Points
+      summary: 'Lista todos os pontos'
+      description: 'Retorna uma lista completa de todos os pontos disponíveis.'
+      operationId: 2c125a3a2b233f6436cf087a5b766f5f
+      responses:
+        '200':
+          description: 'Lista de pontos obtida com sucesso.'
+          content:
+            application/json:
+              schema:
+                properties:
+                  success: { type: boolean, example: true }
+                  message: { type: string, example: 'Points found successfully' }
+                  data: { type: array, items: { $ref: '#/components/schemas/PointDetailList' } }
+                type: object
+    post:
+      tags:
+        - Points
+      summary: 'Cria um novo ponto'
+      description: 'Cria um novo ponto com o nome, latitude e longitude fornecidos.'
+      operationId: 8928f904ea86f6b509db8ccb5e0bfb84
+      requestBody:
+        description: 'Dados necessários para criar um novo ponto'
+        required: true
+        content:
+          application/json:
+            schema:
+              required:
+                - name
+                - latitude
+                - longitude
+              properties:
+                name:
+                  description: 'Nome do ponto'
+                  type: string
+                latitude:
+                  description: 'Latitude do ponto'
+                  type: number
+                  format: float
+                longitude:
+                  description: 'Longitude do ponto'
+                  type: number
+                  format: float
+              type: object
+      responses:
+        '200':
+          description: 'Ponto criado com sucesso.'
+          content:
+            application/json:
+              schema:
+                properties:
+                  success: { type: boolean, example: true }
+                  message: { type: string, example: 'Point created successfully' }
+                  data: { properties: { point: { properties: { uuid: { description: 'UUID único do ponto criado', type: string, format: uuid, example: bb06c005-7f51-4761-b74f-32414a7d417b } }, type: object } }, type: object }
+                type: object
   '/api/points/near/{latitude}/{longitude}/{radius}/{time}':
     get:
       tags:
         - Points
       summary: 'Busca pontos próximos a uma localização geográfica'
       description: 'Retorna uma lista de pontos próximos à localização especificada, dentro do raio fornecido e considerando o horário.'
-      operationId: 2de0ea963daad3095e236fa92d0da1a0
+      operationId: 10758d650f0da87feb514086c254e7a5
       parameters:
         -
           name: latitude
@@ -75,32 +133,71 @@ components:
           type: number
           format: integer
       type: object
-    PointDetail:
+    PointDetailList:
       properties:
         id:
+          description: 'Identificador único do ponto'
           type: integer
           format: int64
         uuid:
+          description: 'UUID único do ponto'
           type: string
           format: uuid
         name:
+          description: 'Nome do ponto'
           type: string
         latitude:
+          description: 'Latitude do ponto'
           type: number
           format: float
         longitude:
+          description: 'Longitude do ponto'
           type: number
           format: float
         open_hour:
+          description: 'Hora de abertura do ponto, se aplicável'
           type: string
           nullable: true
         close_hour:
+          description: 'Hora de fechamento do ponto, se aplicável'
           type: string
           nullable: true
         created_at:
+          description: 'Data e hora da criação do ponto'
           type: string
           format: date-time
         updated_at:
+          description: 'Data e hora da última atualização do ponto'
           type: string
           format: date-time
+      type: object
+    PointDetail:
+      properties:
+        uuid:
+          description: 'UUID único do ponto'
+          type: string
+          format: uuid
+        name:
+          description: 'Nome do ponto'
+          type: string
+        latitude:
+          description: 'Latitude do ponto'
+          type: number
+          format: float
+        longitude:
+          description: 'Longitude do ponto'
+          type: number
+          format: float
+        open_hour:
+          description: 'Hora de abertura do ponto, se aplicável'
+          type: string
+          nullable: true
+        close_hour:
+          description: 'Hora de fechamento do ponto, se aplicável'
+          type: string
+          nullable: true
+        isClosed:
+          description: 'Indica se o ponto está fechado (0 para aberto, 1 para fechado)'
+          type: integer
+          example: 0
       type: object
