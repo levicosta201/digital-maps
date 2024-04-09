@@ -6,6 +6,7 @@ namespace App\src\Infrastructure\Persistence\Eloquent;
 use App\Models\PointModel;
 use App\src\Application\DTO\PointDto;
 use App\src\Domain\Repositories\PointRepositoryInterface;
+use Illuminate\Database\Eloquent\Collection;
 
 class PointRepositoryEoloquent implements PointRepositoryInterface
 {

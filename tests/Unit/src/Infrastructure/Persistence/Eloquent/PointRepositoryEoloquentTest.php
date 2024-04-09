@@ -5,12 +5,15 @@ namespace Tests\Unit\src\Infrastructure\Persistence\Eloquent;
 
 use App\Models\PointModel;
 use App\src\Application\DTO\PointDto;
+use App\src\Domain\Entities\Point;
 use App\src\Infrastructure\Persistence\Eloquent\PointRepositoryEoloquent;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Mockery;
 use Tests\TestCase;
 
 class PointRepositoryEoloquentTest extends TestCase
 {
+    use RefreshDatabase;
 
     protected PointModel $pointModel;
 
@@ -20,7 +23,14 @@ class PointRepositoryEoloquentTest extends TestCase
         $this->pointModel = Mockery::mock(PointModel::class);
         $this->pointModel
             ->shouldReceive('create')
-            ->andReturn($this->pointModel);
+            ->andReturn(PointDto::fromArray([
+                'uuid' => 'mock-mock-mock-mock',
+                'name' => 'test',
+                'latitude' => 15,
+                'longitude' => 30,
+                'open_hour' => '08:17',
+                'close_hour' => '18:21',
+            ]));
     }
 
     public function testCreateSuccess()
@@ -38,5 +48,13 @@ class PointRepositoryEoloquentTest extends TestCase
         $point = $pointRepository->create($mockPointDto);
 
         $this->assertInstanceOf(PointDto::class, $point);
+    }
+
+    public function testAllSuccess()
+    {
+        $pointRepository = new PointRepositoryEoloquent();
+        $points = $pointRepository->all();
+
+        $this->assertIsArray($points);
     }
 }

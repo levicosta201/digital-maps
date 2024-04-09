@@ -22,8 +22,9 @@ class PointsService
             DB::beginTransaction();
             $point = $this->pointRepository->create($pointDto);
             DB::commit();
+            $pointDto = PointDto::fromArray($point->toArray());
             $this->cache->delete(CacheKeyEnum::POINTS->value);
-            return $point;
+            return $pointDto;
         } catch (\Exception $exception) {
             DB::rollBack();
             throw $exception;
