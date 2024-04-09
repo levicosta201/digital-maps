@@ -58,6 +58,92 @@ paths:
                   message: { type: string, example: 'Point created successfully' }
                   data: { properties: { point: { properties: { uuid: { description: 'UUID único do ponto criado', type: string, format: uuid, example: bb06c005-7f51-4761-b74f-32414a7d417b } }, type: object } }, type: object }
                 type: object
+  '/api/points/{uuid}':
+    put:
+      tags:
+        - Points
+      summary: 'Atualiza um ponto existente'
+      description: 'Atualiza um ponto existente com o UUID fornecido com os novos valores fornecidos para nome, latitude, longitude, hora de abertura e fechamento.'
+      operationId: 489a81d0d13d18f04dd3370797858eab
+      parameters:
+        -
+          name: uuid
+          in: path
+          description: 'UUID do ponto a ser atualizado'
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        description: 'Dados para atualizar o ponto'
+        required: true
+        content:
+          application/json:
+            schema:
+              required:
+                - name
+                - latitude
+                - longitude
+                - open_hour
+                - close_hour
+              properties:
+                name:
+                  description: 'Nome do ponto'
+                  type: string
+                latitude:
+                  description: 'Latitude do ponto'
+                  type: number
+                  format: float
+                longitude:
+                  description: 'Longitude do ponto'
+                  type: number
+                  format: float
+                open_hour:
+                  description: 'Hora de abertura do ponto'
+                  type: string
+                  example: '10:00'
+                close_hour:
+                  description: 'Hora de fechamento do ponto'
+                  type: string
+                  example: '19:00'
+              type: object
+      responses:
+        '200':
+          description: 'Ponto atualizado com sucesso.'
+          content:
+            application/json:
+              schema:
+                properties:
+                  success: { type: boolean, example: true }
+                  message: { type: string, example: 'Point updated successfully' }
+                  data: { properties: { point: { properties: { uuid: { description: 'UUID do ponto atualizado', type: string, format: uuid, example: 6ebbc829-1390-402f-8e47-d149cc5ca424 } }, type: object } }, type: object }
+                type: object
+    delete:
+      tags:
+        - Points
+      summary: 'Exclui um ponto específico'
+      description: 'Exclui um ponto com o UUID fornecido.'
+      operationId: 54603898beb5d4e4d2ba7f669627e0bd
+      parameters:
+        -
+          name: uuid
+          in: path
+          description: 'UUID do ponto a ser excluído'
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: 'Ponto excluído com sucesso.'
+          content:
+            application/json:
+              schema:
+                properties:
+                  success: { type: boolean, example: true }
+                  message: { type: string, example: 'Point deleted successfully' }
+                  data: { description: 'Um array vazio, indicando que nenhum dado adicional é retornado.', type: array, example: [] }
+                type: object
   '/api/points/near/{latitude}/{longitude}/{radius}/{time}':
     get:
       tags:

@@ -331,6 +331,47 @@ class PointController extends Controller
         ]);
     }
 
+    /**
+     * @OA\Delete(
+     *     path="/api/points/{uuid}",
+     *     summary="Exclui um ponto específico",
+     *     description="Exclui um ponto com o UUID fornecido.",
+     *     tags={"Points"},
+     *     @OA\Parameter(
+     *         name="uuid",
+     *         in="path",
+     *         required=true,
+     *         description="UUID do ponto a ser excluído",
+     *         @OA\Schema(
+     *             type="string",
+     *             format="uuid"
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Ponto excluído com sucesso.",
+     *         @OA\JsonContent(
+     *             type="object",
+     *             @OA\Property(
+     *                 property="success",
+     *                 type="boolean",
+     *                 example=true
+     *             ),
+     *             @OA\Property(
+     *                 property="message",
+     *                 type="string",
+     *                 example="Point deleted successfully"
+     *             ),
+     *             @OA\Property(
+     *                 property="data",
+     *                 type="array",
+     *                 description="Um array vazio, indicando que nenhum dado adicional é retornado.",
+     *                 example={}
+     *             )
+     *         )
+     *     )
+     * )
+     */
     public function delete(string $uuid, DeletePointAction $deletePointAction): JsonResponse
     {
         $deletePointAction->execute($uuid);
