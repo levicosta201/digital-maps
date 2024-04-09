@@ -1,6 +1,6 @@
 
 # Digital Maps
-
+Digital Maps é um projeto que tem como objetivo criar um sistema de cadastro de usuários e locais, onde o usuário pode cadastrar locais e visualizar locais cadastrados por outros usuários. Foi escolhido a utilização da linguagem PHP com o framework Laravel, por ser um framework robusto e com uma comunidade ativa, além de ser um framework que possui uma curva de aprendizado baixa. A arquitetura do projeto foi pensada para ser escalável e de fácil manutenção, utilizando os princípios do SOLID e DDD.
 
 ## Run Services
 
