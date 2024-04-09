@@ -28,7 +28,7 @@ class PointRepositoryEoloquent implements PointRepositoryInterface
 
     public function update(PointDto $pointDto): int
     {
-        return PointModel::where('uuid', $pointDto->uuid)->update($pointDto->toArray());
+        return PointModel::where('uuid', $pointDto->uuid)->update($pointDto->toArray(false));
     }
 
     public function delete(string $uuid): int

@@ -43,17 +43,22 @@ class PointDto
         );
     }
 
-    public function toArray(): array
+    public function toArray(bool $useIsClosed = true): array
     {
-        return [
+        $data = [
             'uuid' => $this->uuid,
             'name' => $this->name,
             'latitude' => $this->latitude,
             'longitude' => $this->longitude,
             'open_hour' => $this->openHour ?? null,
             'close_hour' => $this->closeHour ?? null,
-            'isClosed' => $this->isClosed ?? 0,
         ];
+
+        if ($useIsClosed) {
+            $data['isClosed'] = $this->isClosed;
+        }
+
+        return $data;
     }
 
     public function setIsClosed(int $isClosed): self

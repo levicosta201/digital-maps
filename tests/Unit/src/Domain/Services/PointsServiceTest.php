@@ -242,22 +242,22 @@ class PointsServiceTest extends TestCase
     public function testGetNearSuccess()
     {
         $points = [
-            PointDto::fromArray([
+            [
                 'uuid' => 'mock-mock-mock-mock',
                 'name' => 'test',
                 'latitude' => 15,
                 'longitude' => 30,
-                'open_hour' => '08:17',
-                'close_hour' => '18:21',
-            ]),
-            PointDto::fromArray([
+                'open_hour' => '08:17:00',
+                'close_hour' => '18:21:00',
+            ],
+            [
                 'uuid' => 'mock-mock-mock-mock',
                 'name' => 'test',
                 'latitude' => 15,
                 'longitude' => 30,
-                'open_hour' => '08:17',
-                'close_hour' => '18:21',
-            ]),
+                'open_hour' => null,
+                'close_hour' => null,
+            ],
         ];
 
         $this->cache
@@ -270,6 +270,41 @@ class PointsServiceTest extends TestCase
 
         $pointsService = new PointsService($this->pointRepository, $this->cache);
         $point = $pointsService->getNear(15, 30, 2, '08:22');
+
+        $this->assertEquals(2, count($point));
+    }
+
+    public function testGetNearSuccessNotInRangeHour()
+    {
+        $points = [
+            [
+                'uuid' => 'mock-mock-mock-mock',
+                'name' => 'test',
+                'latitude' => 15,
+                'longitude' => 30,
+                'open_hour' => '08:17:00',
+                'close_hour' => '18:21:00',
+            ],
+            [
+                'uuid' => 'mock-mock-mock-mock',
+                'name' => 'test',
+                'latitude' => 15,
+                'longitude' => 30,
+                'open_hour' => null,
+                'close_hour' => null,
+            ],
+        ];
+
+        $this->cache
+            ->shouldReceive('set')
+            ->andReturn(true);
+
+        $this->pointRepository
+            ->shouldReceive('getNear')
+            ->andReturn($points);
+
+        $pointsService = new PointsService($this->pointRepository, $this->cache);
+        $point = $pointsService->getNear(15, 30, 2, '19:22');
 
         $this->assertEquals(2, count($point));
     }
