@@ -312,22 +312,22 @@ class PointsServiceTest extends TestCase
     public function testGetNearSuccessCachedData()
     {
         $points = [
-            PointDto::fromArray([
+            [
                 'uuid' => 'mock-mock-mock-mock',
                 'name' => 'test',
                 'latitude' => 15,
                 'longitude' => 30,
-                'open_hour' => '08:17',
-                'close_hour' => '18:21',
-            ]),
-            PointDto::fromArray([
+                'open_hour' => '08:17:00',
+                'close_hour' => '18:21:00',
+            ],
+            [
                 'uuid' => 'mock-mock-mock-mock',
                 'name' => 'test',
                 'latitude' => 15,
                 'longitude' => 30,
-                'open_hour' => '08:17',
-                'close_hour' => '18:21',
-            ]),
+                'open_hour' => null,
+                'close_hour' => null,
+            ]
         ];
 
         $cache = Mockery::mock(CacheInterface::class);
