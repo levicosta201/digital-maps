@@ -9,6 +9,7 @@ use App\src\Domain\Enum\CacheKeyEnum;
 use App\src\Domain\Repositories\PointRepositoryInterface;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class PointsService
 {
@@ -29,6 +30,7 @@ class PointsService
             return $pointDto;
         } catch (\Exception $exception) {
             DB::rollBack();
+            Log::error('Error on create', ['exception' => $exception->getMessage()]);
             throw $exception;
         }
     }
@@ -44,6 +46,7 @@ class PointsService
             $this->cache->set(CacheKeyEnum::POINTS->value, $points, 5);
             return $points;
         } catch (\Exception $exception) {
+            Log::error('Error on getPoints', ['exception' => $exception->getMessage()]);
             return $this->cache->get(CacheKeyEnum::POINTS->value);
         }
     }
@@ -66,6 +69,7 @@ class PointsService
             return $pointDto;
         } catch (\Exception $exception) {
             DB::rollBack();
+            Log::error('Error on update', ['exception' => $exception->getMessage()]);
             throw $exception;
         }
     }
@@ -83,6 +87,7 @@ class PointsService
             return true;
         } catch (\Exception $exception) {
             DB::rollBack();
+            Log::error('Error on delete', ['exception' => $exception->getMessage()]);
             throw $exception;
         }
     }
@@ -100,6 +105,7 @@ class PointsService
 
             return $pointsNear;
         } catch (\Exception $exception) {
+            Log::error('Error on getNear', ['exception' => $exception->getMessage()]);
             throw $exception;
         }
     }
