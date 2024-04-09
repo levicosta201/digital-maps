@@ -1,0 +1,106 @@
+openapi: 3.0.0
+paths:
+  '/api/points/near/{latitude}/{longitude}/{radius}/{time}':
+    get:
+      tags:
+        - Points
+      summary: 'Busca pontos próximos a uma localização geográfica'
+      description: 'Retorna uma lista de pontos próximos à localização especificada, dentro do raio fornecido e considerando o horário.'
+      operationId: 2de0ea963daad3095e236fa92d0da1a0
+      parameters:
+        -
+          name: latitude
+          in: path
+          description: 'Latitude da localização central para a busca.'
+          required: true
+          schema:
+            type: number
+            format: float
+        -
+          name: longitude
+          in: path
+          description: 'Longitude da localização central para a busca.'
+          required: true
+          schema:
+            type: number
+            format: float
+        -
+          name: radius
+          in: path
+          description: 'O raio em torno da localização central, dentro do qual os pontos serão buscados.'
+          required: true
+          schema:
+            type: integer
+        -
+          name: time
+          in: path
+          description: 'Horário especificado para filtragem, no formato HH:MM.'
+          required: true
+          schema:
+            type: string
+            pattern: '^\d{2}:\d{2}$'
+      responses:
+        '200':
+          description: 'Uma lista de pontos encontrados.'
+          content:
+            application/json:
+              schema:
+                properties:
+                  success: { type: boolean, example: true }
+                  message: { type: string, example: 'Points found successfully' }
+                  data: { type: array, items: { $ref: '#/components/schemas/PointDetail' } }
+                type: object
+components:
+  schemas:
+    Point:
+      required:
+        - id
+        - name
+        - latitude
+        - longitude
+      properties:
+        id:
+          description: 'Identificador único do ponto'
+          type: integer
+          format: int64
+        name:
+          description: 'Nome do ponto'
+          type: string
+        latitude:
+          description: 'Latitude do ponto'
+          type: number
+          format: integer
+        longitude:
+          description: 'Longitude do ponto'
+          type: number
+          format: integer
+      type: object
+    PointDetail:
+      properties:
+        id:
+          type: integer
+          format: int64
+        uuid:
+          type: string
+          format: uuid
+        name:
+          type: string
+        latitude:
+          type: number
+          format: float
+        longitude:
+          type: number
+          format: float
+        open_hour:
+          type: string
+          nullable: true
+        close_hour:
+          type: string
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+      type: object

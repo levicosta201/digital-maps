@@ -7,6 +7,7 @@ use App\src\Application\DTO\PointDto;
 use App\src\Domain\Cache\CacheInterface;
 use App\src\Domain\Enum\CacheKeyEnum;
 use App\src\Domain\Repositories\PointRepositoryInterface;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 
 class PointsService
@@ -94,11 +95,35 @@ class PointsService
                 return $pointsNear;
             }
             $pointsNear = $this->pointRepository->getNear($latitude, $longitude, $distance, $hour);
+            $pointsNear = array_map(function ($point) use ($hour) {
+                $pointDto = PointDto::fromArray($point);
+                $pointDto = $pointDto->setIsClosed(
+                    $this->checkIsClosed($pointDto, $hour)
+                );
+                return $pointDto->toArray();
+            }, $pointsNear);
             $this->cache->set(CacheKeyEnum::POINTS_NEAR->value, $pointsNear, 5);
 
             return $pointsNear;
         } catch (\Exception $exception) {
             throw $exception;
         }
+    }
+
+    private function checkIsClosed(PointDto $pointDto, string $hour): int
+    {
+        if ($pointDto->openHour === null || $pointDto->closeHour === null) {
+            return 0;
+        }
+
+        $currentHour = Carbon::createFromFormat('H:i', $hour);
+        $openHour = Carbon::createFromFormat('H:i:s', $pointDto->openHour);
+        $closeHour = Carbon::createFromFormat('H:i:s', $pointDto->closeHour);
+
+        if ($currentHour->isBetween($openHour, $closeHour)) {
+            return 0;
+        }
+
+        return 1;
     }
 }
