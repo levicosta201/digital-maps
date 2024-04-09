@@ -92,22 +92,27 @@ class PointsService
         try {
             $pointsNear = $this->cache->get(CacheKeyEnum::POINTS_NEAR->value);
             if ($pointsNear) {
-                return $pointsNear;
+                return $this->filterNearPoints($pointsNear, $hour);
             }
             $pointsNear = $this->pointRepository->getNear($latitude, $longitude, $distance, $hour);
-            $pointsNear = array_map(function ($point) use ($hour) {
-                $pointDto = PointDto::fromArray($point);
-                $pointDto = $pointDto->setIsClosed(
-                    $this->checkIsClosed($pointDto, $hour)
-                );
-                return $pointDto->toArray();
-            }, $pointsNear);
+            $pointsNear = $this->filterNearPoints($pointsNear, $hour);
             $this->cache->set(CacheKeyEnum::POINTS_NEAR->value, $pointsNear, 5);
 
             return $pointsNear;
         } catch (\Exception $exception) {
             throw $exception;
         }
+    }
+
+    private function filterNearPoints(array $pointsNear, string $hour): array
+    {
+        return array_map(function ($point) use ($hour) {
+            $pointDto = PointDto::fromArray($point);
+            $pointDto = $pointDto->setIsClosed(
+                $this->checkIsClosed($pointDto, $hour)
+            );
+            return $pointDto->toArray();
+        }, $pointsNear);
     }
 
     private function checkIsClosed(PointDto $pointDto, string $hour): int
