@@ -30,7 +30,22 @@ E após isso, rode o comando para criar as tabelas
   make migrate
 ```
 
+As vezes pode ser necessário rodar os comandos abaixo, para dar
+permissão de escrita nas pastas
 
+```bash
+  sudo chmod 777 -R storage
+```
+
+```bash
+  sudo chmod 777 -R bootstrap/cache
+```
+
+Caso o arquivo .env não tenha sido criado, crie um arquivo .env e copie o conteúdo do arquivo .env.example para ele
+
+```bash
+  cp .env.example .env
+``` 
 
 ## Rodando os testes
 
